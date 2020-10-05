@@ -8,6 +8,7 @@ class Reply extends Model
 {
     public function like(){
         return $this->hasMany('App\Model\Like', 'reply_id', 'id');
+        // return $this->hasMany('App\Model\Like', 'id', 'reply_id');
     }
 
     public function user(){
