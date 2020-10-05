@@ -19,7 +19,5 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::apiResource('/question', 'QuestionController');
-Route::get('/question/{question}/detail', 'QuestionController@questionDetail');
-
 Route::apiResource('/category', 'CategoryController');
-Route::apiResource('/reply', 'ReplyController');
+Route::apiResource('/question/{question}/reply', 'ReplyController');

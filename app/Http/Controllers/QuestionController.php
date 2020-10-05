@@ -32,16 +32,4 @@ class QuestionController extends Controller
         $question->delete();
         return response()->json([], 204);
     }
-
-    public function questionDetail(Question $question){
-        $question = new QuestionResource($question);
-        $replies = ReplyResource::collection($question->reply);
-        $category = $question->category->name;
-        
-        return response()->json([
-            'question' => $question,
-            'reply' => $replies,
-            'category' => $category
-        ],200);
-    }
 }

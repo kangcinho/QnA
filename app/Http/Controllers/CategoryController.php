@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Model\Category;
 use Illuminate\Http\Request;
 use App\Http\Resources\CategoryResource;
+use Illuminate\Support\Str;
+
 class CategoryController extends Controller
 {
     public function index()
@@ -15,7 +17,19 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $category = Category::create($request->all());
+        // $category = Category::create($request->all());
+
+        // $category = new Category;
+        // $category->name = $request->name;
+        // $category->slug = Str::slug($request->name,'-');
+        // $category->user_id = $request->user_id;
+
+        $category = Category::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name, '-'),
+            'user_id' => $request->user_id
+        ]);
+
         return new CategoryResource($category);
     }
 

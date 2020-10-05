@@ -20,10 +20,11 @@ class QuestionResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'body' => $this->body,
-            'username' => $this->user->username,
+            'username' => $this->user->name,
             'created_at' => $this->created_at->diffForHumans(),
             // 'replies' => $this->reply,
             // 'category' => new CategoryResource($this->category)
+            'category' => $this->category->name
         ];
     }
 }
