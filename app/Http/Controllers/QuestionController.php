@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Model\Question;
 use Illuminate\Http\Request;
 use App\Http\Resources\QuestionResource;
+use App\Http\Resources\ReplyResource;
 
 class QuestionController extends Controller
 {
@@ -30,5 +31,17 @@ class QuestionController extends Controller
     public function destroy(Question $question){
         $question->delete();
         return response()->json([], 204);
+    }
+
+    public function questionDetail(Question $question){
+        $question = new QuestionResource($question);
+        $replies = ReplyResource::collection($question->reply);
+        $category = $question->category->name;
+        
+        return response()->json([
+            'question' => $question,
+            'reply' => $replies,
+            'category' => $category
+        ],200);
     }
 }
