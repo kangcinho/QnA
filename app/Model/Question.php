@@ -6,9 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    
+    protected $fillable = ['title', 'slug', 'body', 'category_id', 'user_id'];
+
+    public function getRouteKeyName(){
+        return 'slug';
+    }
+
     public function user(){
-        return $this->belongsTo('App\Model\User', 'id', 'user_id');
+        return $this->belongsTo('App\Model\User', 'user_id');
     }
 
     public function reply(){
@@ -16,6 +21,6 @@ class Question extends Model
     }
 
     public function category(){
-        return $this->belongsTo('App\Model\Category', 'id', 'category_id');
+        return $this->belongsTo('App\Model\Category', 'category_id');
     }
 }
