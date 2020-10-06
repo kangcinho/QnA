@@ -8,6 +8,11 @@ use App\Model\Reply;
 
 class LikeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('jwtapi');
+    }
+
     public function like(Reply $reply){
         $like = $reply->like()->create([
             'user_id' => 2

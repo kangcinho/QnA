@@ -9,6 +9,11 @@ use App\Model\Question;
 
 class ReplyController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('jwtapi', ['except' => ['index', 'show']]);
+    }
+    
     public function index(Question $question)
     {
         $replies = $question->reply;

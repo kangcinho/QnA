@@ -9,6 +9,11 @@ use App\Http\Resources\ReplyResource;
 
 class QuestionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('jwtapi', ['except' => ['index', 'show']]);
+    }
+    
     public function index(){
         $questions = Question::all();
         return QuestionResource::collection($questions);

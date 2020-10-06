@@ -9,6 +9,11 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('jwtapi', ['except' => ['index', 'show']]);
+    }
+
     public function index()
     {
         $categories = Category::all();
