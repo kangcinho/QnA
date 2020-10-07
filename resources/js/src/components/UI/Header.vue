@@ -1,48 +1,78 @@
 <template>
-  <div>
-    <v-app-bar
-      color="deep-purple accent-4"
-      dense
-      dark
-    >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+    <div>
+        <v-app-bar color="deep-purple" dark>
+            <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+            <v-toolbar-title>QnA</v-toolbar-title>
+            <v-spacer></v-spacer>
 
-      <v-toolbar-title>Page title</v-toolbar-title>
+            <v-btn icon to="/login">
+                <v-icon>
+                    mdi-login
+                </v-icon>
+            </v-btn>
+        </v-app-bar>
 
-      <v-spacer></v-spacer>
+        
+        <v-navigation-drawer v-model="drawer" absolute temporary>
+            <template v-slot:prepend>
+                <v-list-item two-line>
+                    <v-list-item-avatar>
+                        <!-- <img src="https://randomuser.me/api/portraits/women/81.jpg"> -->
+                         <v-icon
+                            large
+                            rounded
+                            color="blue-grey darken-2"
+                        >
+                            mdi-account
+                        </v-icon>
+                    </v-list-item-avatar>
 
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
+                    <v-list-item-content>
+                        <v-list-item-title>Name</v-list-item-title>
+                        <v-list-item-subtitle>username</v-list-item-subtitle>
+                    </v-list-item-content>
+                </v-list-item>
+            </template>
 
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-
-      <v-menu
-        left
-        bottom
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-
-        <v-list>
-          <v-list-item
-            v-for="n in 5"
-            :key="n"
-            @click="() => {}"
-          >
-            <v-list-item-title>Option {{ n }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
-  </div>
+            <v-list nav dense>
+                <v-list-item-group active-class="deep-purple--text text--accent-4">
+                    <v-list-item v-for="(menu, index) in menus" :key="index" :to="menu.link">
+                        <v-list-item-icon>
+                            <v-icon>{{ menu.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>
+                            {{ menu.title }}
+                        </v-list-item-title>
+                    </v-list-item>
+                </v-list-item-group> 
+            </v-list>
+        </v-navigation-drawer>
+    </div>
 </template>
+
+<script>
+export default {
+    data(){
+        return {
+            drawer: false,
+            menus:[
+                {
+                    icon: 'mdi-home',
+                    title: 'Home',
+                    link: '/'
+                },
+                {
+                    icon: 'mdi-book',
+                    title: 'Category',
+                    link: '/category'
+                },
+                {
+                    icon: 'mdi-book',
+                    title: 'Question',
+                    link: '/question'
+                },
+            ]
+        }
+    }
+}
+</script>
