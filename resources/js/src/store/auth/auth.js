@@ -1,9 +1,11 @@
 import axios from '../../axiosConfig'
+import {redirectRoute, getLocalStorage} from '../../Helper/Helper'
 import * as authTypes from './types'
+
+
 
 const setAuthorizationHeader = (access_token) => {
     if(access_token != null) {
-        // console.log(access_token)
         axios.defaults.headers.common['Authorization'] = access_token;
     }else{
         delete axios.defaults.headers.common['Authorization'];
@@ -28,12 +30,7 @@ const setLocalStorage = (payload) => {
     }
 }
 
-const getLocalStorage = () => {
-    return {
-        access_token: localStorage.getItem('access_token'),
-        expire_date: localStorage.getItem('expire_date')
-    }
-}
+
 
 const state = {
     userAuth: {
@@ -48,7 +45,7 @@ const state = {
 const mutations = {
     [authTypes.MUTATION_LOGIN]: (state, payload) => {
         state.userAuth.access_token = payload.access_token
-        state.userAuth.expire_in = payload.expire_in
+        state.userAuth.expires_in = payload.expires_in
         state.userAuth.username = payload.user.username
         state.userAuth.name = payload.user.name
         state.isAuth = true;
@@ -67,6 +64,7 @@ const actions = {
         return new Promise( (success, error) => {
             axios.post('/auth/login', payload)
             .then( (res) => {
+                redirectRoute('home')
                 commit(authTypes.MUTATION_LOGIN, res.data)
                 success(res.data);
             })
@@ -81,6 +79,7 @@ const actions = {
             .then( (res) => {
                 success(res.data);
                 commit(authTypes.MUTATION_LOGOUT);
+                redirectRoute('home')
             })
             .catch( (err) => {
                 error(err);
@@ -101,23 +100,28 @@ const actions = {
     },
     [authTypes.ACTION_TOKEN_FROM_LOCAL_STORAGE]: ({commit, dispatch}) => {
         const access_token = getLocalStorage().access_token;
-        const expire_date = new Date(getLocalStorage().expire_date);
-        setAuthorizationHeader(access_token);
-
-        //DSINI BISA CEK Expire Datenya untuk melakukan sesuatu, atau lsg Refresh Token
-        const dateNow = new Date();
-        if(expire_date > dateNow){
-            console.log("REFRESH TOKEN")
-            return dispatch(authTypes.ACTION_REFRESH_TOKEN)
+        if(!access_token){
+            // redirectRoute('login');
         }else{
-            console.log("LOGOUT")
-            // commit(authTypes.MUTATION_LOGOUT)
+            const expire_date = new Date(getLocalStorage().expire_date);
+            const dateNow = new Date();
+            if(expire_date > dateNow){
+                setAuthorizationHeader(access_token);
+                return dispatch(authTypes.ACTION_REFRESH_TOKEN)
+            }else{
+                commit(authTypes.MUTATION_LOGOUT)
+            }
         }
     },
 }
 
 const getters = {
-
+    [authTypes.GETTER_ISAUTH]: (state) => {
+        return state.isAuth;
+    },
+    [authTypes.GETTER_USER_LOGINED]: (state) => {
+        return state.userAuth;
+    }
 }
 
 const auth = {

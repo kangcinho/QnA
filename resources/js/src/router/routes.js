@@ -9,15 +9,25 @@ import Signup from '../views/Auth/Signup'
 const routes = [
     {
         path: '/',
-        component: Home
+        name: 'home',
+        component: Home,
+        
     },
     {
         path: '/question',
-        component: Question
+        name: 'question',
+        component: Question,
+        children:[
+            {
+                path: '/question/:slug/reply',
+                name: 'reply',
+            }
+        ]
     },
     {
         path: '/category',
-        component: Category
+        name: 'category',
+        component: Category,
     },
 
 
@@ -25,11 +35,13 @@ const routes = [
     // Auth
     {
         path: '/login',
-        component: Login
+        name: 'login',
+        component: Login,
     },
     {
         path: '/signup',
-        component: Signup
+        name: 'signup',
+        component: Signup,
     },
 
 ]

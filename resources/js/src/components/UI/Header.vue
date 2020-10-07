@@ -5,9 +5,14 @@
             <v-toolbar-title>QnA</v-toolbar-title>
             <v-spacer></v-spacer>
 
-            <v-btn icon to="/login">
+            <v-btn icon to="/login" v-if="!isAuth">
                 <v-icon>
                     mdi-login
+                </v-icon>
+            </v-btn>
+            <v-btn icon v-else @click="logout">
+                <v-icon>
+                    mdi-logout
                 </v-icon>
             </v-btn>
         </v-app-bar>
@@ -15,7 +20,7 @@
         
         <v-navigation-drawer v-model="drawer" absolute temporary>
             <template v-slot:prepend>
-                <v-list-item two-line>
+                <v-list-item two-line v-if="isAuth">
                     <v-list-item-avatar>
                         <!-- <img src="https://randomuser.me/api/portraits/women/81.jpg"> -->
                          <v-icon
@@ -28,8 +33,8 @@
                     </v-list-item-avatar>
 
                     <v-list-item-content>
-                        <v-list-item-title>Name</v-list-item-title>
-                        <v-list-item-subtitle>username</v-list-item-subtitle>
+                        <v-list-item-title>{{ userLogin.name }}</v-list-item-title>
+                        <v-list-item-subtitle>{{ userLogin.username }}</v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
             </template>
@@ -51,6 +56,7 @@
 </template>
 
 <script>
+import * as authTypes from '../../store/auth/types'
 export default {
     data(){
         return {
@@ -72,6 +78,25 @@ export default {
                     link: '/question'
                 },
             ]
+        }
+    },
+    computed:{
+        isAuth(){
+            return this.$store.getters[authTypes.GETTER_ISAUTH]
+        },
+        userLogin(){
+            return this.$store.getters[authTypes.GETTER_USER_LOGINED]
+        }
+    },
+    methods:{
+        logout(){
+            this.$store.dispatch(authTypes.ACTION_LOGOUT)
+            .then( (res) => {
+                
+            })
+            .catch( (err) => {
+
+            })
         }
     }
 }

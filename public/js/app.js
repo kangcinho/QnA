@@ -1942,6 +1942,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _store_auth_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store/auth/types */ "./resources/js/src/store/auth/types.js");
 //
 //
 //
@@ -1994,6 +1995,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2012,6 +2019,19 @@ __webpack_require__.r(__webpack_exports__);
         link: '/question'
       }]
     };
+  },
+  computed: {
+    isAuth: function isAuth() {
+      return this.$store.getters[_store_auth_types__WEBPACK_IMPORTED_MODULE_0__["GETTER_ISAUTH"]];
+    },
+    userLogin: function userLogin() {
+      return this.$store.getters[_store_auth_types__WEBPACK_IMPORTED_MODULE_0__["GETTER_USER_LOGINED"]];
+    }
+  },
+  methods: {
+    logout: function logout() {
+      this.$store.dispatch(_store_auth_types__WEBPACK_IMPORTED_MODULE_0__["ACTION_LOGOUT"]).then(function (res) {})["catch"](function (err) {});
+    }
   }
 });
 
@@ -2685,16 +2705,27 @@ var render = function() {
           _vm._v(" "),
           _c("v-spacer"),
           _vm._v(" "),
-          _c(
-            "v-btn",
-            { attrs: { icon: "", to: "/login" } },
-            [
-              _c("v-icon", [
-                _vm._v("\n                mdi-login\n            ")
-              ])
-            ],
-            1
-          )
+          !_vm.isAuth
+            ? _c(
+                "v-btn",
+                { attrs: { icon: "", to: "/login" } },
+                [
+                  _c("v-icon", [
+                    _vm._v("\n                mdi-login\n            ")
+                  ])
+                ],
+                1
+              )
+            : _c(
+                "v-btn",
+                { attrs: { icon: "" }, on: { click: _vm.logout } },
+                [
+                  _c("v-icon", [
+                    _vm._v("\n                mdi-logout\n            ")
+                  ])
+                ],
+                1
+              )
         ],
         1
       ),
@@ -2708,44 +2739,50 @@ var render = function() {
               key: "prepend",
               fn: function() {
                 return [
-                  _c(
-                    "v-list-item",
-                    { attrs: { "two-line": "" } },
-                    [
-                      _c(
-                        "v-list-item-avatar",
+                  _vm.isAuth
+                    ? _c(
+                        "v-list-item",
+                        { attrs: { "two-line": "" } },
                         [
                           _c(
-                            "v-icon",
-                            {
-                              attrs: {
-                                large: "",
-                                rounded: "",
-                                color: "blue-grey darken-2"
-                              }
-                            },
+                            "v-list-item-avatar",
                             [
-                              _vm._v(
-                                "\n                        mdi-account\n                    "
+                              _c(
+                                "v-icon",
+                                {
+                                  attrs: {
+                                    large: "",
+                                    rounded: "",
+                                    color: "blue-grey darken-2"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                        mdi-account\n                    "
+                                  )
+                                ]
                               )
-                            ]
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-list-item-content",
+                            [
+                              _c("v-list-item-title", [
+                                _vm._v(_vm._s(_vm.userLogin.name))
+                              ]),
+                              _vm._v(" "),
+                              _c("v-list-item-subtitle", [
+                                _vm._v(_vm._s(_vm.userLogin.username))
+                              ])
+                            ],
+                            1
                           )
                         ],
                         1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", [_vm._v("Name")]),
-                          _vm._v(" "),
-                          _c("v-list-item-subtitle", [_vm._v("username")])
-                        ],
-                        1
                       )
-                    ],
-                    1
-                  )
+                    : _vm._e()
                 ]
               },
               proxy: true
@@ -63323,6 +63360,52 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/src/Helper/Helper.js":
+/*!*******************************************!*\
+  !*** ./resources/js/src/Helper/Helper.js ***!
+  \*******************************************/
+/*! exports provided: getLocalStorage, redirectRoute, isUserHasLogin */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLocalStorage", function() { return getLocalStorage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "redirectRoute", function() { return redirectRoute; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isUserHasLogin", function() { return isUserHasLogin; });
+/* harmony import */ var _router_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../router/router */ "./resources/js/src/router/router.js");
+
+var getLocalStorage = function getLocalStorage() {
+  return {
+    access_token: localStorage.getItem('access_token'),
+    expire_date: localStorage.getItem('expire_date')
+  };
+};
+var redirectRoute = function redirectRoute(nameRoute) {
+  if (_router_router__WEBPACK_IMPORTED_MODULE_0__["default"].history.current.name !== nameRoute) {
+    _router_router__WEBPACK_IMPORTED_MODULE_0__["default"].push({
+      name: nameRoute
+    });
+  }
+};
+var isUserHasLogin = function isUserHasLogin() {
+  var isAuth = false;
+  var access_token = getLocalStorage().access_token;
+  var expire_date = new Date(getLocalStorage().expire_date);
+  var dateNow = new Date();
+
+  if (access_token) {
+    isAuth = true;
+
+    if (expire_date < dateNow) {
+      isAuth = false;
+    }
+  }
+
+  return isAuth;
+};
+
+/***/ }),
+
 /***/ "./resources/js/src/axiosConfig.js":
 /*!*****************************************!*\
   !*** ./resources/js/src/axiosConfig.js ***!
@@ -63429,10 +63512,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./routes */ "./resources/js/src/router/routes.js");
+/* harmony import */ var _Helper_Helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Helper/Helper */ "./resources/js/src/Helper/Helper.js");
 
 
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   mode: 'history',
   routes: _routes__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -63444,6 +63529,14 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   }
 });
 router.beforeEach(function (to, from, next) {
+  if (to.name === 'login') {
+    if (Object(_Helper_Helper__WEBPACK_IMPORTED_MODULE_3__["isUserHasLogin"])()) {
+      return next({
+        name: 'home'
+      });
+    }
+  }
+
   return next();
 });
 /* harmony default export */ __webpack_exports__["default"] = (router);
@@ -63472,19 +63565,28 @@ __webpack_require__.r(__webpack_exports__);
 
 var routes = [{
   path: '/',
+  name: 'home',
   component: _views_Home__WEBPACK_IMPORTED_MODULE_0__["default"]
 }, {
   path: '/question',
-  component: _views_Question__WEBPACK_IMPORTED_MODULE_1__["default"]
+  name: 'question',
+  component: _views_Question__WEBPACK_IMPORTED_MODULE_1__["default"],
+  children: [{
+    path: '/question/:slug/reply',
+    name: 'reply'
+  }]
 }, {
   path: '/category',
+  name: 'category',
   component: _views_Category__WEBPACK_IMPORTED_MODULE_2__["default"]
 }, // Auth
 {
   path: '/login',
+  name: 'login',
   component: _views_Auth_Login__WEBPACK_IMPORTED_MODULE_3__["default"]
 }, {
   path: '/signup',
+  name: 'signup',
   component: _views_Auth_Signup__WEBPACK_IMPORTED_MODULE_4__["default"]
 }];
 /* harmony default export */ __webpack_exports__["default"] = (routes);
@@ -63501,17 +63603,18 @@ var routes = [{
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _axiosConfig__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../axiosConfig */ "./resources/js/src/axiosConfig.js");
-/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./types */ "./resources/js/src/store/auth/types.js");
-var _mutations, _actions;
+/* harmony import */ var _Helper_Helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Helper/Helper */ "./resources/js/src/Helper/Helper.js");
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./types */ "./resources/js/src/store/auth/types.js");
+var _mutations, _actions, _getters;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
+
 var setAuthorizationHeader = function setAuthorizationHeader(access_token) {
   if (access_token != null) {
-    // console.log(access_token)
     _axiosConfig__WEBPACK_IMPORTED_MODULE_0__["default"].defaults.headers.common['Authorization'] = access_token;
   } else {
     delete _axiosConfig__WEBPACK_IMPORTED_MODULE_0__["default"].defaults.headers.common['Authorization'];
@@ -63536,13 +63639,6 @@ var setLocalStorage = function setLocalStorage(payload) {
   }
 };
 
-var getLocalStorage = function getLocalStorage() {
-  return {
-    access_token: localStorage.getItem('access_token'),
-    expire_date: localStorage.getItem('expire_date')
-  };
-};
-
 var state = {
   userAuth: {// access_token: null,
     // expire_date: null,
@@ -63551,65 +63647,73 @@ var state = {
   },
   isAuth: false
 };
-var mutations = (_mutations = {}, _defineProperty(_mutations, _types__WEBPACK_IMPORTED_MODULE_1__["MUTATION_LOGIN"], function (state, payload) {
+var mutations = (_mutations = {}, _defineProperty(_mutations, _types__WEBPACK_IMPORTED_MODULE_2__["MUTATION_LOGIN"], function (state, payload) {
   state.userAuth.access_token = payload.access_token;
-  state.userAuth.expire_in = payload.expire_in;
+  state.userAuth.expires_in = payload.expires_in;
   state.userAuth.username = payload.user.username;
   state.userAuth.name = payload.user.name;
   state.isAuth = true;
   setLocalStorage(payload);
-}), _defineProperty(_mutations, _types__WEBPACK_IMPORTED_MODULE_1__["MUTATION_LOGOUT"], function (state) {
+}), _defineProperty(_mutations, _types__WEBPACK_IMPORTED_MODULE_2__["MUTATION_LOGOUT"], function (state) {
   state.userAuth = {};
   state.isAuth = false;
   setLocalStorage(null);
 }), _mutations);
-var actions = (_actions = {}, _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_1__["ACTION_LOGIN"], function (_ref, payload) {
+var actions = (_actions = {}, _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_2__["ACTION_LOGIN"], function (_ref, payload) {
   var commit = _ref.commit;
   return new Promise(function (success, error) {
     _axiosConfig__WEBPACK_IMPORTED_MODULE_0__["default"].post('/auth/login', payload).then(function (res) {
-      commit(_types__WEBPACK_IMPORTED_MODULE_1__["MUTATION_LOGIN"], res.data);
+      Object(_Helper_Helper__WEBPACK_IMPORTED_MODULE_1__["redirectRoute"])('home');
+      commit(_types__WEBPACK_IMPORTED_MODULE_2__["MUTATION_LOGIN"], res.data);
       success(res.data);
     })["catch"](function (err) {
       error(err);
     });
   });
-}), _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_1__["ACTION_LOGOUT"], function (_ref2) {
+}), _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_2__["ACTION_LOGOUT"], function (_ref2) {
   var commit = _ref2.commit;
   return new Promise(function (success, error) {
     _axiosConfig__WEBPACK_IMPORTED_MODULE_0__["default"].post('/auth/logout').then(function (res) {
       success(res.data);
-      commit(_types__WEBPACK_IMPORTED_MODULE_1__["MUTATION_LOGOUT"]);
+      commit(_types__WEBPACK_IMPORTED_MODULE_2__["MUTATION_LOGOUT"]);
+      Object(_Helper_Helper__WEBPACK_IMPORTED_MODULE_1__["redirectRoute"])('home');
     })["catch"](function (err) {
       error(err);
     });
   });
-}), _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_1__["ACTION_REFRESH_TOKEN"], function (_ref3) {
+}), _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_2__["ACTION_REFRESH_TOKEN"], function (_ref3) {
   var commit = _ref3.commit;
   return new Promise(function (success, error) {
     _axiosConfig__WEBPACK_IMPORTED_MODULE_0__["default"].post('/auth/refresh').then(function (res) {
-      commit(_types__WEBPACK_IMPORTED_MODULE_1__["MUTATION_LOGIN"], res.data);
+      commit(_types__WEBPACK_IMPORTED_MODULE_2__["MUTATION_LOGIN"], res.data);
       success(res.data);
     })["catch"](function (err) {
       error(err);
     });
   });
-}), _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_1__["ACTION_TOKEN_FROM_LOCAL_STORAGE"], function (_ref4) {
+}), _defineProperty(_actions, _types__WEBPACK_IMPORTED_MODULE_2__["ACTION_TOKEN_FROM_LOCAL_STORAGE"], function (_ref4) {
   var commit = _ref4.commit,
       dispatch = _ref4.dispatch;
-  var access_token = getLocalStorage().access_token;
-  var expire_date = new Date(getLocalStorage().expire_date);
-  setAuthorizationHeader(access_token); //DSINI BISA CEK Expire Datenya untuk melakukan sesuatu, atau lsg Refresh Token
+  var access_token = Object(_Helper_Helper__WEBPACK_IMPORTED_MODULE_1__["getLocalStorage"])().access_token;
 
-  var dateNow = new Date();
-
-  if (expire_date > dateNow) {
-    console.log("REFRESH TOKEN");
-    return dispatch(_types__WEBPACK_IMPORTED_MODULE_1__["ACTION_REFRESH_TOKEN"]);
+  if (!access_token) {// redirectRoute('login');
   } else {
-    console.log("LOGOUT"); // commit(authTypes.MUTATION_LOGOUT)
+    var expire_date = new Date(Object(_Helper_Helper__WEBPACK_IMPORTED_MODULE_1__["getLocalStorage"])().expire_date);
+    var dateNow = new Date();
+
+    if (expire_date > dateNow) {
+      setAuthorizationHeader(access_token);
+      return dispatch(_types__WEBPACK_IMPORTED_MODULE_2__["ACTION_REFRESH_TOKEN"]);
+    } else {
+      commit(_types__WEBPACK_IMPORTED_MODULE_2__["MUTATION_LOGOUT"]);
+    }
   }
 }), _actions);
-var getters = {};
+var getters = (_getters = {}, _defineProperty(_getters, _types__WEBPACK_IMPORTED_MODULE_2__["GETTER_ISAUTH"], function (state) {
+  return state.isAuth;
+}), _defineProperty(_getters, _types__WEBPACK_IMPORTED_MODULE_2__["GETTER_USER_LOGINED"], function (state) {
+  return state.userAuth;
+}), _getters);
 var auth = {
   state: state,
   mutations: mutations,
@@ -63624,7 +63728,7 @@ var auth = {
 /*!**********************************************!*\
   !*** ./resources/js/src/store/auth/types.js ***!
   \**********************************************/
-/*! exports provided: MUTATION_LOGIN, MUTATION_LOGOUT, MUTATION_TOKEN_FROM_LOCAL_STORAGE, ACTION_LOGIN, ACTION_LOGOUT, ACTION_TOKEN_FROM_LOCAL_STORAGE, ACTION_REFRESH_TOKEN */
+/*! exports provided: MUTATION_LOGIN, MUTATION_LOGOUT, MUTATION_TOKEN_FROM_LOCAL_STORAGE, ACTION_LOGIN, ACTION_LOGOUT, ACTION_TOKEN_FROM_LOCAL_STORAGE, ACTION_REFRESH_TOKEN, GETTER_ISAUTH, GETTER_USER_LOGINED */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -63636,6 +63740,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ACTION_LOGOUT", function() { return ACTION_LOGOUT; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ACTION_TOKEN_FROM_LOCAL_STORAGE", function() { return ACTION_TOKEN_FROM_LOCAL_STORAGE; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ACTION_REFRESH_TOKEN", function() { return ACTION_REFRESH_TOKEN; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GETTER_ISAUTH", function() { return GETTER_ISAUTH; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GETTER_USER_LOGINED", function() { return GETTER_USER_LOGINED; });
 var MUTATION_LOGIN = 'auth/MUTATION_LOGIN';
 var MUTATION_LOGOUT = 'auth/MUTATION_LOGOUT';
 var MUTATION_TOKEN_FROM_LOCAL_STORAGE = 'auth/MUTATION_TOKEN_FROM_LOCAL_STORAGE';
@@ -63643,6 +63749,8 @@ var ACTION_LOGIN = 'auth/ACTION_LOGIN';
 var ACTION_LOGOUT = 'auth/ACTION_LOGOUT';
 var ACTION_TOKEN_FROM_LOCAL_STORAGE = 'auth/ACTION_TOKEN_FROM_LOCAL_STORAGE';
 var ACTION_REFRESH_TOKEN = 'auth/ACTION_REFRESH_TOKEN';
+var GETTER_ISAUTH = 'auth/GETTER_ISAUTH';
+var GETTER_USER_LOGINED = 'auth/GETTER_USER_LOGINED';
 
 /***/ }),
 
